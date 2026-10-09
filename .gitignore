@@ -1,0 +1,26 @@
+cat > .gitignore <<'EOF'
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Silo object data
+data/*
+
+# Benchmark output
+benchmarks/results/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Logs
+*.log
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+EOF
