@@ -87,6 +87,22 @@ services:
       retries: 3
       start_period: 60s
 
+  nginx:
+    image: ${NGINX_IMAGE}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${SILO_API_PORT}:9000"
+      - "127.0.0.1:${SILO_CONSOLE_PORT}:9001"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - silo1
+      - silo2
+      - silo3
+      - silo4
+    networks:
+      - silo_network
+
 networks:
   silo_network:
     driver: bridge

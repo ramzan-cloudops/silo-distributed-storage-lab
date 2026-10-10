@@ -1,0 +1,83 @@
+# Phase 04: Versioning and Object Lock Evidence
+
+## 1. Objective
+
+Verify object versioning, configure Object Lock retention, and test whether the storage system prevents deletion of a protected object version.
+
+## 2. Object Versioning Test
+
+**Bucket:** `ramzan-lab-bucket`
+
+Versioning was enabled on the bucket. The same object, `hello.txt`, was uploaded again with updated content.
+
+The version listing showed two versions:
+
+* **Version 1:** 34 bytes — original content.
+* **Version 2:** 41 bytes — updated content.
+
+**Result:** PASS — Multiple versions of the same object were visible.
+
+## 3. Object Lock Bucket
+
+The existing bucket did not support Object Lock. A separate bucket was created with Object Lock and versioning enabled.
+
+**Bucket:** `ramzan-lock-bucket`
+
+The bucket's versioning status was checked and confirmed as enabled.
+
+**Result:** PASS — The Object Lock-enabled bucket was created successfully.
+
+## 4. Retention Configuration
+
+A test object named `object-lock-test.txt` was uploaded to the Object Lock bucket.
+
+Governance retention was configured for one day.
+
+The retention check returned:
+
+```text
+Name    : lab/ramzan-lock-bucket/object-lock-test.txt
+Version : f51103d2-7dde-46d7-bb3c-03c60d50c658
+Mode    : GOVERNANCE, expiring in 23 hours 26 minutes
+```
+
+The remaining retention time above reflects the time when the command was executed.
+
+**Result:** PASS — Governance retention was applied to the original object version.
+
+## 5. Version Listing and Delete Marker
+
+The version listing showed:
+
+* Original object version: `f51103d2-7dde-46d7-bb3c-03c60d50c658`
+* Delete marker version: `fa09675b-afc7-4a6d-b6ed-65c68751e8db`
+
+A normal delete operation created a delete marker. The original object version remained present in the version listing.
+
+**Result:** PASS — The original version remained available in the version history after the delete marker was created.
+
+## 6. WORM Protection Test
+
+A direct deletion attempt was made against the original version without using the governance bypass option.
+
+The storage system returned:
+
+```text
+Object, 'object-lock-test.txt (Version ID=f51103d2-7dde-46d7-bb3c-03c60d50c658)' is WORM protected and cannot be overwritten
+```
+
+**Result:** PASS — The storage system rejected the direct deletion attempt because the object version was WORM protected.
+
+## 7. Final Summary
+
+The following checks were completed successfully:
+
+* Object versioning enabled and multiple versions verified.
+* Object Lock-enabled bucket created.
+* Governance retention configured and verified.
+* Delete marker behavior observed.
+* Direct deletion of the protected original version rejected.
+
+**Overall Phase 04 Result:** PASS
+
+**Environment Note:** This is a lab deployment running multiple storage containers on a single EC2 instance. It demonstrates versioning and Object Lock behavior but does not independently validate host-level or disk-level fault tolerance.

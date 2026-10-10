@@ -1,0 +1,116 @@
+Silo Distributed Object Storage Lab
+Phase 03: S3 Basic Operations Evidence
+Date: 2026-10-09
+
+1. Bucket Creation
+Command:
+docker compose exec silo1 mcli mb lab/ramzan-lab-bucket
+
+Result:
+PASS - Bucket created successfully.
+
+2. Bucket Verification
+Command:
+docker compose exec silo1 mcli ls lab
+
+Result:
+PASS - The ramzan-lab-bucket bucket was listed.
+
+3. Test Object
+Local test file:
+benchmarks/test-data/hello.txt
+
+Test content:
+Silo distributed storage lab test
+
+4. Object Upload
+Command:
+docker compose exec silo1 mcli cp /tmp/hello.txt lab/ramzan-lab-bucket/hello.txt
+
+Result:
+PASS - The hello.txt object was uploaded and subsequently verified in the bucket.
+
+Object details:
+Name: hello.txt
+Size: 34 bytes
+
+5. Object Download
+Command:
+docker compose exec silo1 mcli cp lab/ramzan-lab-bucket/hello.txt /tmp/downloaded-hello.txt
+
+Result:
+PASS - The uploaded object was downloaded successfully.
+
+6. SHA-256 Integrity Verification
+
+Original file checksum:
+02b810feffefcc128e191ec7d74a8db206e75d02eebefc2d14a2de989158434a
+
+Downloaded file checksum:
+02b810feffefcc128e191ec7d74a8db206e75d02eebefc2d14a2de989158434a
+
+Result:
+PASS - Both SHA-256 checksums match. The downloaded test file's content matches the original file.
+
+Scope and Limitations:
+- This test verifies one small synthetic object.
+- It does not establish multipart upload, versioning, Object Lock, or failure-recovery behavior.
+- All four storage nodes currently run on the same EC2 instance and underlying host storage.
+
+7. Object Metadata Verification
+
+Command:
+docker compose exec silo1 mcli stat lab/ramzan-lab-bucket/hello.txt
+
+Actual Result:
+Name: hello.txt
+Size: 34 B
+ETag: d4646d3a533a4cae25067339ce6471b8
+Type: file
+Content-Type: text/plain
+
+Result:
+PASS - Object metadata was retrieved successfully.
+
+8. Object Tags
+
+Command:
+docker compose exec silo1 mcli tag set lab/ramzan-lab-bucket/hello.txt "Environment=Lab&Project=Silo"
+
+Verification:
+Object tags were listed successfully after setting them.
+
+Tags:
+- Environment=Lab
+- Project=Silo
+
+Result:
+PASS - Object tags were set and verified successfully.
+
+9. Presigned URL Download Verification
+
+Command to generate a temporary download URL:
+docker compose exec silo1 mcli share download lab/ramzan-lab-bucket/hello.txt --expire 5m
+
+Download test:
+curl --connect-to silo1:9000:127.0.0.1:9000 -f -o /tmp/presigned-hello.txt "$PRESIGNED_URL"
+
+Result:
+PASS - The object was downloaded successfully using a presigned URL.
+
+Downloaded file:
+ /tmp/presigned-hello.txt
+
+File content:
+Silo distributed storage lab test
+
+SHA-256:
+02b810feffefcc128e191ec7d74a8db206e75d02eebefc2d14a2de989158434a
+
+Integrity result:
+PASS - The downloaded file checksum matches the original file checksum.
+
+Notes:
+- The presigned URL provides temporary access to the object.
+- The URL was kept out of the evidence file because it contains a temporary access signature.
+- The test used Nginx on localhost to route the request to the Silo service.
