@@ -1,0 +1,100 @@
+SILO DISTRIBUTED STORAGE LAB
+Phase 05: Failure Testing and Healing
+=====================================
+
+Environment:
+- Deployment: Docker Compose
+- Silo nodes: silo1, silo2, silo3, silo4
+- Reverse proxy: Nginx
+- Test bucket: ramzan-lab-bucket
+- Test object: hello.txt
+- Expected object content: Silo distributed storage lab - Version 2
+
+TEST 1: BASELINE CLUSTER HEALTH
+--------------------------------
+Action:
+Checked cluster health before failure testing.
+
+Command:
+curl -i http://127.0.0.1:9000/minio/health/cluster
+
+Observed result:
+HTTP 200 OK
+
+Status: PASS
+
+
+TEST 2: SINGLE-NODE FAILURE
+---------------------------
+Action:
+Stopped silo4.
+
+Command:
+docker compose stop silo4
+
+Observed results:
+- Cluster health endpoint returned HTTP 200 OK.
+- hello.txt remained readable.
+- Object content matched the expected Version 2 content.
+
+Status: PASS
+
+
+TEST 3: SINGLE-NODE RECOVERY
+-----------------------------
+Action:
+Restarted silo4.
+
+Command:
+docker compose start silo4
+
+Observed results:
+- Cluster health endpoint returned HTTP 200 OK.
+- The test object remained readable.
+- The node returned to service.
+
+Status: PASS
+
+
+TEST 4: TWO-NODE FAILURE
+------------------------
+Action:
+Stopped silo3 and silo4.
+
+Command:
+docker compose stop silo3 silo4
+
+Observed result:
+- Cluster health endpoint returned HTTP 503 Service Unavailable.
+- Response included X-Minio-Write-Quorum: 3.
+- Object read/write operations were not tested during this outage.
+
+Status: PASS - Expected failure behavior observed.
+
+
+TEST 5: TWO-NODE RECOVERY
+-------------------------
+Action:
+Restarted silo3 and silo4.
+
+Command:
+docker compose start silo3 silo4
+
+Observed results:
+- All four Silo containers returned to a healthy state.
+- Nginx was running.
+- Cluster health endpoint returned HTTP 200 OK.
+- hello.txt was readable with the expected content.
+
+Status: PASS
+
+
+IMPORTANT LIMITATIONS
+---------------------
+All four Silo containers ran on a single EC2 instance.
+This test demonstrates container/node failure behavior in the lab.
+It does not prove resilience against EC2 instance failure, physical disk
+failure, or Availability Zone failure.
+
+The two-node outage test verified cluster health behavior only.
+Object read/write operations were not tested during that outage.
