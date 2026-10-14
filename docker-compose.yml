@@ -10,6 +10,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      SILO_METRICS_LISTEN: ${SILO_METRICS_LISTEN}
+      MINIO_PROMETHEUS_AUTH_TYPE: ${MINIO_PROMETHEUS_AUTH_TYPE}
     volumes:
       - ./data/silo1:/data
     networks:
@@ -32,6 +34,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      SILO_METRICS_LISTEN: ${SILO_METRICS_LISTEN}
+      MINIO_PROMETHEUS_AUTH_TYPE: ${MINIO_PROMETHEUS_AUTH_TYPE}
     volumes:
       - ./data/silo2:/data
     networks:
@@ -54,6 +58,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      SILO_METRICS_LISTEN: ${SILO_METRICS_LISTEN}
+      MINIO_PROMETHEUS_AUTH_TYPE: ${MINIO_PROMETHEUS_AUTH_TYPE}
     volumes:
       - ./data/silo3:/data
     networks:
@@ -76,6 +82,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      SILO_METRICS_LISTEN: ${SILO_METRICS_LISTEN}
+      MINIO_PROMETHEUS_AUTH_TYPE: ${MINIO_PROMETHEUS_AUTH_TYPE}
     volumes:
       - ./data/silo4:/data
     networks:
@@ -103,6 +111,21 @@ services:
     networks:
       - silo_network
 
+  prometheus:
+    image: prom/prometheus:v3.8.0
+    container_name: silo-prometheus
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - silo1
+      - silo2
+      - silo3
+      - silo4
+    networks:
+      - silo_network
 networks:
   silo_network:
     driver: bridge

@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "silo"
+    metrics_path: /minio/metrics/v3
+    static_configs:
+      - targets:
+          - "silo1:9000"
+          - "silo2:9000"
+          - "silo3:9000"
+          - "silo4:9000"
