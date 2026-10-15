@@ -9,6 +9,8 @@ data/*
 
 # Benchmark output
 benchmarks/results/
+benchmarks/downloads/
+benchmarks/test-data/10mb.bin
 
 # Python
 __pycache__/

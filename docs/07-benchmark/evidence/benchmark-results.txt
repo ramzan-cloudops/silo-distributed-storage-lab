@@ -1,0 +1,37 @@
+Silo Distributed Object Storage Lab
+Phase 07: Performance Benchmark Evidence
+Date: 2026-10-15
+
+Environment:
+- Silo nodes: 4
+- Reverse proxy: Nginx
+- Monitoring: Prometheus
+- S3 endpoint: http://127.0.0.1:9000
+- Test object: 10mb.bin
+- Object size: 10,485,760 bytes
+
+Health checks:
+- Silo readiness: ready: ok (200)
+- S3 liveness endpoint: HTTP 200
+- S3 readiness endpoint: HTTP 200
+- All four Silo containers: healthy
+
+Benchmark results:
+- Upload duration: 0.723 seconds
+- Download duration: 0.669 seconds
+- Approximate upload throughput: 13.83 MiB/s
+- Approximate download throughput: 14.95 MiB/s
+
+Object verification:
+- ContentLength: 10485760 bytes
+- Object listing: successful
+- Original SHA-256:
+  e5b844cc57f57094ea4585e235f36c78c1cd222262bb89d53c94dcb4d6b3e55d
+- Downloaded SHA-256:
+  e5b844cc57f57094ea4585e235f36c78c1cd222262bb89d53c94dcb4d6b3e55d
+- Checksum comparison: MATCH
+
+Limitations:
+- Single 10 MiB object
+- Single measured upload and download run
+- Not a sustained-load or maximum-throughput test
