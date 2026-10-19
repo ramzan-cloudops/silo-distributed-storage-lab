@@ -1,6 +1,0 @@
-### Screenshot 1: Stopping the Existing Lab
-
-The `docker compose down` command stopped and removed the existing Silo containers, Nginx, Prometheus, and the Docker Compose network. The existing host-mounted storage directories were preserved.
-
-![Docker Compose shutdown](screenshots/01-destroy-lab.png)
-
