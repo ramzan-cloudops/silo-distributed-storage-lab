@@ -1,0 +1,67 @@
+Silo Distributed Object Storage Lab
+Phase 08: Rebuild from Scratch
+
+========================================
+1. Rebuild Procedure
+========================================
+
+Command used to destroy the running lab:
+docker compose down
+
+Result:
+- Four Silo containers removed.
+- Nginx container removed.
+- Prometheus container removed.
+- Docker Compose network removed.
+- Existing bind-mounted Silo data directories preserved.
+
+Command used to rebuild the lab:
+docker compose up -d
+
+========================================
+2. Rebuild Timing
+========================================
+
+Rebuild command duration: 1.33 seconds
+
+Note:
+This duration measures the execution time of the
+docker compose up -d command. It does not represent
+the total time until all services became healthy.
+
+========================================
+3. Container Health Verification
+========================================
+
+Silo Node 1: Healthy
+Silo Node 2: Healthy
+Silo Node 3: Healthy
+Silo Node 4: Healthy
+Nginx: Running
+Prometheus: Running
+
+========================================
+4. Silo Readiness Verification
+========================================
+
+Command:
+docker compose exec -T silo1 silo healthcheck ready
+
+Result:
+ready: ok (200, 1ms)
+
+Status: PASS
+
+========================================
+5. Scope and Limitations
+========================================
+
+This test recreated the Docker Compose containers
+and network while preserving the existing Silo data
+directories and configuration files.
+
+This was a container-level rebuild, not a complete
+storage-data reset.
+
+The recorded 1.33 seconds is the Compose startup
+command duration, not the full cluster readiness time.

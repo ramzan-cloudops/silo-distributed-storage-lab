@@ -1,0 +1,6 @@
+### Screenshot 3: Verifying Service Health and Readiness
+
+The `docker compose ps` output confirmed that all four Silo nodes were healthy and that Nginx and Prometheus were running. The Silo readiness check returned HTTP 200, confirming successful readiness verification for `silo1`.
+
+![Service health and readiness verification](screenshots/03-health-verification.png)
+
